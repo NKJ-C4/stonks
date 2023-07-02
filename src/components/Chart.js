@@ -12,11 +12,6 @@ import {
 import ThemeContext from "../context/ThemeContext";
 import StockContext from "../context/StockContext";
 import { fetchHistoricalData } from "../utils/api/stock-api";
-import {
-  createDate,
-  convertDateToUnixTimestamp,
-  convertUnixTimestampToDate,
-} from "../utils/helpers/date-helper";
 import { chartConfig } from "../constants/config";
 
 const Chart = () => {
@@ -31,36 +26,26 @@ const Chart = () => {
   const formatData = (data) => {
     let graphData = [];
     let sliceNumber = filter === "1W" ? 7 : filter === "1M" ? 30 : 12;
-    graphData = Object.keys(data).slice(0, sliceNumber).map((item, index) => {
-      return {
-        value: data[item]["4. close"],
-        date: item,
-      };
-    });
-    return graphData.reverse();
+    if(data) {
+      graphData = Object.keys(data).slice(0, sliceNumber).map((item, index) => {
+        return {
+          value: data[item]["4. close"],
+          date: item,
+        };
+      });
+      return graphData.reverse();
+    }
   };
 
   useEffect(() => {
-    const getDateRange = () => {
-      const { days, weeks, months, years } = chartConfig[filter];
-
-      const endDate = new Date();
-      const startDate = createDate(endDate, -days, -weeks, -months, -years);
-
-      const startTimestampUnix = convertDateToUnixTimestamp(startDate);
-      const endTimestampUnix = convertDateToUnixTimestamp(endDate);
-      return { startTimestampUnix, endTimestampUnix };
-    };
-
     const updateChartData = async () => {
       try {
-        const { startTimestampUnix, endTimestampUnix } = getDateRange();
-        const resolution = chartConfig[filter].resolution;
         const result = await fetchHistoricalData(
           stockSymbol,
           filter
         );
-        setData(formatData(filter === "1Y" ? result["Monthly Adjusted Time Series"] : result["Time Series (Daily)"]));
+        let formattedData = await formatData(filter === "1Y" ? result["Monthly Adjusted Time Series"] : result["Time Series (Daily)"])
+        setData(formattedData);
       } catch (error) {
         setData([]);
         console.log(error);

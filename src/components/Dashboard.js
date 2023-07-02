@@ -5,7 +5,7 @@ import Details from "./Details";
 import Chart from "./Chart";
 import Header from "./Header";
 import StockContext from "../context/StockContext";
-import { fetchStockDetails, fetchQuote, searchSymbol } from "../utils/api/stock-api";
+import {fetchQuote, searchSymbol } from "../utils/api/stock-api";
 
 const Dashboard = () => {
   const { darkMode } = useContext(ThemeContext);
@@ -30,7 +30,7 @@ const Dashboard = () => {
     const updateStockOverview = async () => {
       try {
         const result = await fetchQuote(stockSymbol);
-        setQuote(result["Global Quote"]);
+        setQuote(result["Global Quote"] ? result["Global Quote"] : {});
       } catch (error) {
         setQuote({});
         console.log(error);
@@ -56,9 +56,9 @@ const Dashboard = () => {
       <div>
         <Overview
           symbol={stockSymbol}
-          price={quote["08. previous close"]}
-          change={quote["09. change"]}
-          changePercent={quote["10. change percent"]}
+          price={quote !=={} && quote["08. previous close"]}
+          change={quote !=={} && quote["09. change"]}
+          changePercent={quote !=={} && quote["10. change percent"]}
           currency={stockDetails["8. currency"]}
         />
       </div>
