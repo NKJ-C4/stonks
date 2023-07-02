@@ -6,7 +6,7 @@ import ThemeContext from "./context/ThemeContext";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const [stockSymbol, setStockSymbol] = useState("");
+  const [stockSymbol, setStockSymbol] = useState("ADANIENT.BSE");
 
   return (
     <ThemeContext.Provider value={{ darkMode, setDarkMode }}>

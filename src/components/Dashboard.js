@@ -5,7 +5,7 @@ import Details from "./Details";
 import Chart from "./Chart";
 import Header from "./Header";
 import StockContext from "../context/StockContext";
-import { fetchStockDetails, fetchQuote } from "../utils/api/stock-api";
+import { fetchStockDetails, fetchQuote, searchSymbol } from "../utils/api/stock-api";
 
 const Dashboard = () => {
   const { darkMode } = useContext(ThemeContext);
@@ -19,8 +19,8 @@ const Dashboard = () => {
   useEffect(() => {
     const updateStockDetails = async () => {
       try {
-        const result = await fetchStockDetails(stockSymbol);
-        setStockDetails(result);
+        const result = await searchSymbol(stockSymbol);
+        setStockDetails(result.bestMatches[0]);
       } catch (error) {
         setStockDetails({});
         console.log(error);
@@ -30,7 +30,7 @@ const Dashboard = () => {
     const updateStockOverview = async () => {
       try {
         const result = await fetchQuote(stockSymbol);
-        setQuote(result);
+        setQuote(result["Global Quote"]);
       } catch (error) {
         setQuote({});
         console.log(error);
@@ -48,7 +48,7 @@ const Dashboard = () => {
       }`}
     >
       <div className="col-span-1 md:col-span-2 xl:col-span-3 row-span-1 flex justify-start items-center">
-        <Header name={stockDetails.name} />
+        <Header name={stockDetails["2. name"]} />
       </div>
       <div className="md:col-span-2 row-span-4">
         <Chart />
@@ -56,10 +56,10 @@ const Dashboard = () => {
       <div>
         <Overview
           symbol={stockSymbol}
-          price={quote.pc}
-          change={quote.d}
-          changePercent={quote.dp}
-          currency={stockDetails.currency}
+          price={quote["08. previous close"]}
+          change={quote["09. change"]}
+          changePercent={quote["10. change percent"]}
+          currency={stockDetails["8. currency"]}
         />
       </div>
       <div className="row-span-2 xl:row-span-3">

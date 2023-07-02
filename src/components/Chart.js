@@ -113,8 +113,8 @@ const Chart = () => {
             fillOpacity={1}
             strokeWidth={0.5}
           />
-          <XAxis dataKey="date" />
-          <YAxis />
+          <XAxis dataKey="date"/>
+          <YAxis domain={[0, dataMax => (Math.ceil(dataMax))]} type="number" tickCount={7} dataKey="value" />
         </AreaChart>
       </ResponsiveContainer>
     </Card>

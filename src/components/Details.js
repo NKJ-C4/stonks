@@ -5,20 +5,16 @@ import ThemeContext from "../context/ThemeContext";
 const Details = ({ details }) => {
   const { darkMode } = useContext(ThemeContext);
 
-  const detailsList = {
-    name: "Name",
-    country: "Country",
-    currency: "Currency",
-    exchange: "Exchange",
-    ipo: "IPO Date",
-    marketCapitalization: "Market Capitalization",
-    finnhubIndustry: "Industry",
+  const detailsList =   {
+    "1. symbol": "Symbol",
+    "2. name": "Name",
+    "3. type": "Type",
+    "4. region": "Region",
+    "5. marketOpen": "Market open",
+    "6. marketClose": "Market close",
+    "7. timezone": "Time zone",
+    "8. currency": "Currency",
   };
-
-  const convertMillionToBillion = (number) => {
-    return (number / 1000).toFixed(2);
-  };
-
   return (
     <Card>
       <ul
@@ -31,9 +27,7 @@ const Details = ({ details }) => {
             <li key={item} className="flex-1 flex justify-between items-center">
               <span>{detailsList[item]}</span>
               <span className="font-bold">
-                {item === "marketCapitalization"
-                  ? `${convertMillionToBillion(details[item])}B`
-                  : details[item]}
+                {details[item]}
               </span>
             </li>
           );
