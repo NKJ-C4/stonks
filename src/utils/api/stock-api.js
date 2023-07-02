@@ -61,17 +61,18 @@ export const fetchQuote = async (stockSymbol) => {
  */
 export const fetchHistoricalData = async (
   stockSymbol,
-  resolution,
-  from,
-  to
+  filter
 ) => {
-  const url = `${basePath}/stock/candle?symbol=${stockSymbol}&resolution=${resolution}&from=${from}&to=${to}&token=${process.env.REACT_APP_API_KEY}`;
+  const url = filter === "1W" || filter === "1M" ? 
+  `${basePath}/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockSymbol}&outputsize=compact&apikey=${process.env.REACT_APP_API_KEY}`
+  :
+  `${basePath}/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=${stockSymbol}&outputsize=compact&apikey=${process.env.REACT_APP_API_KEY}`;
   const response = await fetch(url);
 
-  if (!response.ok) {
+  if (!response) {
     const message = `An error has occured: ${response.status}`;
     throw new Error(message);
   }
-
+  
   return await response.json();
 };

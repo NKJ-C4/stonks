@@ -29,12 +29,15 @@ const Chart = () => {
   const [data, setData] = useState([]);
 
   const formatData = (data) => {
-    return data.c.map((item, index) => {
+    let graphData = [];
+    let sliceNumber = filter === "1W" ? 7 : filter === "1M" ? 30 : 12;
+    graphData = Object.keys(data).slice(0, sliceNumber).map((item, index) => {
       return {
-        value: item.toFixed(2),
-        date: convertUnixTimestampToDate(data.t[index]),
+        value: data[item]["4. close"],
+        date: item,
       };
     });
+    return graphData.reverse();
   };
 
   useEffect(() => {
@@ -55,11 +58,9 @@ const Chart = () => {
         const resolution = chartConfig[filter].resolution;
         const result = await fetchHistoricalData(
           stockSymbol,
-          resolution,
-          startTimestampUnix,
-          endTimestampUnix
+          filter
         );
-        setData(formatData(result));
+        setData(formatData(filter === "1Y" ? result["Monthly Adjusted Time Series"] : result["Time Series (Daily)"]));
       } catch (error) {
         setData([]);
         console.log(error);
@@ -113,7 +114,7 @@ const Chart = () => {
             strokeWidth={0.5}
           />
           <XAxis dataKey="date" />
-          <YAxis domain={["dataMin", "dataMax"]} />
+          <YAxis />
         </AreaChart>
       </ResponsiveContainer>
     </Card>
