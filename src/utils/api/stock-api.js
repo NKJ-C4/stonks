@@ -37,9 +37,7 @@ export const fetchQuote = async (stockSymbol) => {
 /**
  * Fetches historical data of a stock (to be displayed on a chart)
  * @param {string} stockSymbol - Symbol of the company, e.g. 'FB'
- * @param {string} resolution - Resolution of timestamps. Supported resolution includes: 1, 5, 15, 30, 60, D, W, M
- * @param {number} from - UNIX timestamp (seconds elapsed since January 1st, 1970 at UTC). Interval initial value.
- * @param {number} to - UNIX timestamp (seconds elapsed since January 1st, 1970 at UTC). Interval end value.
+ * @param {string} filter - Resolution of timestamps. Supported resolution includes: 1, 5, 15, 30, 60, D, W, M
  * @returns {Promise<Object>} Response object
  */
 export const fetchHistoricalData = async (
