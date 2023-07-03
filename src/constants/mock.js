@@ -1,3 +1,5 @@
+// This file was created to mock the API response before integrating the alphavantage APIs.
+// Keeping it for now as it might come of use
 export const mockSearchResults = {
   count: 4,
   result: [

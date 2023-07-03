@@ -5,7 +5,7 @@ import { MoonIcon } from "@heroicons/react/solid";
 const ThemeIcon = () => {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
 
-  const toggleDarkMode = () => {
+  const toggleDarkMode = () => { // function to toggle between Dark and light mode
     setDarkMode(!darkMode);
   };
 
