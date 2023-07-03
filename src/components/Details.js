@@ -5,6 +5,8 @@ import ThemeContext from "../context/ThemeContext";
 const Details = ({ details }) => {
   const { darkMode } = useContext(ThemeContext);
 
+  // Creating an object whose keys are similar to that of the keys returned by the API, 
+  // so that there is ease in iterating over them using different array methods (here, map method)
   const detailsList =   {
     "1. symbol": "Symbol",
     "2. name": "Name",
