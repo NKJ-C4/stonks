@@ -58,7 +58,7 @@ const Chart = () => {
   return (
     <Card>
       <ul className="flex absolute top-2 right-2 z-40">
-        {Object.keys(chartConfig).map((item) => (
+        {chartConfig.map((item) => (
           <li key={item}>
             <ChartFilter
               text={item}
