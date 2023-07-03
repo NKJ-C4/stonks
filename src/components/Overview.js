@@ -9,7 +9,7 @@ const Overview = ({ symbol, price, change, changePercent, currency }) => {
       </span>
       <div className="w-full h-full flex items-center justify-around">
         <span className="text-2xl xl:text-4xl 2xl:text-5xl flex items-center">
-          {currency === "USD" ? "$" : "₹"}{price && parseFloat(price).toFixed(2)}
+          {currency === "USD" ? "$" : "₹"}{price && parseFloat(price).toFixed(2)} {/* Check for the currency, only USD and INR are provided, its a limitation. Then parsing the price to float and rounding it off upto 2 decimal places*/}
           <span className="text-lg xl:text-xl 2xl:text-2xl text-neutral-400 m-2">
             {currency}
           </span>
@@ -20,6 +20,7 @@ const Overview = ({ symbol, price, change, changePercent, currency }) => {
           }`}
         >
           {change && parseFloat(change).toFixed(2)} <span>({changePercent && parseFloat(changePercent).toFixed(2)}%)</span>
+          {/* Parsing the change and change percentages from string to float, then rounding them off upto 2 decimal places*/}
         </span>
       </div>
     </Card>

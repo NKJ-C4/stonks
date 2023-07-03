@@ -17,7 +17,7 @@ const Dashboard = () => {
   const [quote, setQuote] = useState({});
 
   useEffect(() => {
-    const updateStockDetails = async () => {
+    const updateStockDetails = async () => { // Updates the stock details component's data
       try {
         const result = await searchSymbol(stockSymbol);
         setStockDetails(result.bestMatches[0]);
@@ -27,7 +27,7 @@ const Dashboard = () => {
       }
     };
 
-    const updateStockOverview = async () => {
+    const updateStockOverview = async () => { // Updates the stock Overview component's data
       try {
         const result = await fetchQuote(stockSymbol);
         setQuote(result["Global Quote"] ? result["Global Quote"] : {});
@@ -39,7 +39,7 @@ const Dashboard = () => {
 
     updateStockDetails();
     updateStockOverview();
-  }, [stockSymbol]);
+  }, [stockSymbol]); // stockSymbol is supplied to the useEffect() as an additional param, so that the change in its value triggers the update in Stock details and overview
 
   return (
     <div
