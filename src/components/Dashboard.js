@@ -8,6 +8,16 @@ import StockContext from "../context/StockContext";
 import {fetchQuote, searchSymbol } from "../utils/api/stock-api";
 
 const Dashboard = () => {
+  const mockStockDetails = {
+    "1. symbol": "ADANIENT.BSE",
+    "2. name": "Adani Enterprises",
+    "3. type": "Equity",
+    "4. region": "India/Bombay",
+    "5. marketOpen": "9:00",
+    "6. marketClose": "15:30",
+    "7. timezone": "IST (GMT+5:30)",
+    "8. currency": "INR",
+  }
   const { darkMode } = useContext(ThemeContext);
 
   const { stockSymbol } = useContext(StockContext);
@@ -63,7 +73,7 @@ const Dashboard = () => {
         />
       </div>
       <div className="row-span-2 xl:row-span-3">
-        <Details details={stockDetails} />
+        <Details details={mockStockDetails} />
       </div>
     </div>
   );

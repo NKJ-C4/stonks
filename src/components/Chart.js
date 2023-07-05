@@ -1,62 +1,141 @@
-// For creating graph, a libarary called Recharts is used, which is a React based library for
-// generating graphs according to the data it is provided.
-
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from 'react';
 import ChartFilter from "./ChartFilter";
+import { chartConfig } from "../constants/config";
 import Card from "./Card";
+import ThemeContext from "../context/ThemeContext";
+
 import {
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
   ResponsiveContainer,
-  AreaChart,
   Tooltip,
-} from "recharts";
-import ThemeContext from "../context/ThemeContext";
-import StockContext from "../context/StockContext";
-import { fetchHistoricalData } from "../utils/api/stock-api";
-import { chartConfig } from "../constants/config";
+  Legend,
+  Cell,
+} from 'recharts';
+import { rawData, rawData2, rawData3 } from '../constants/mock';
+const colors = [
+  '#1f77b4',
+  '#ff7f0e',
+  '#2ca02c',
+  '#d62728',
+  '#9467bd',
+  '#8c564b',
+  '#e377c2',
+  '#7f7f7f',
+  '#bcbd22',
+  '#17becf',
+];
 
-const Chart = () => {
+const Candlestick = props => {
+  const {
+    fill,
+    x,
+    y,
+    width,
+    height,
+    low,
+    high,
+    openClose: [open, close],
+  } = props;
+  const isGrowing = open < close;
+  const color = isGrowing ? 'green' : 'red';
+  const ratio = Math.abs(height / (open - close));
+  console.log(props);
+  return (
+    <g stroke={color} fill="none" strokeWidth="2">
+      <path
+        d={`
+          M ${x},${y}
+          L ${x},${y + height}
+          L ${x + width},${y + height}
+          L ${x + width},${y}
+          L ${x},${y}
+        `}
+      />
+      {/* bottom line */}
+      {isGrowing ? (
+        <path
+          d={`
+            M ${x + width / 2}, ${y + height}
+            v ${(open - low) * ratio}
+          `}
+        />
+      ) : (
+        <path
+          d={`
+            M ${x + width / 2}, ${y}
+            v ${(close - low) * ratio}
+          `}
+        />
+      )}
+      {/* top line */}
+      {isGrowing ? (
+        <path
+          d={`
+            M ${x + width / 2}, ${y}
+            v ${(close - high) * ratio}
+          `}
+        />
+      ) : (
+        <path
+          d={`
+            M ${x + width / 2}, ${y + height}
+            v ${(open - high) * ratio}
+          `}
+        />
+      )}
+    </g>
+  );
+};
+
+const prepareData = data => {
+  return data.map(({ open, close, ...other }) => {
+    return {
+      ...other,
+      openClose: [open, close],
+    };
+  });
+};
+
+const CustomShapeBarChart = () => {
   const [filter, setFilter] = useState("1W"); // Initializing the filter with "1 Week", so that initially the graph shows past 7 days data
-
+  const [graphData, setGraphData] = useState([]);
   const { darkMode } = useContext(ThemeContext); // Context state which holds the value of current applied theme (light or dark)
-
-  const { stockSymbol } = useContext(StockContext); // Context state which holds the value of selected stock's symbol
-
-  const [data, setData] = useState([]);
-
-  const formatData = (data) => { // Function to format the data according to the input which Areachart expects
-    let graphData = [];
-    let sliceNumber = filter === "1W" ? 7 : filter === "1M" ? 30 : 12; // Since there is huge amount of data from the API, only the required amount of data is being sliced and provided to the graph
-    if(data) {
-      graphData = Object.keys(data).slice(0, sliceNumber).map((item, index) => { // Iterate over object's keys and return an array of objects in this - [{"value": 229, date: "22-05-2023"}] form
-        return {
-          value: data[item]["4. close"],
-          date: item,
-        };
-      });
-      return graphData.reverse();
-    }
-  };
-
   useEffect(() => {
-    const updateChartData = async () => {
+    const updateChartData = () => {
       try {
-        const result = await fetchHistoricalData(
-          stockSymbol,
-          filter
-        );
-        let formattedData = await formatData(filter === "1Y" ? result["Monthly Adjusted Time Series"] : result["Time Series (Daily)"])
-        setData(formattedData);
+        let formattedData = filter === "1M" ? rawData2 : filter === "1Y"? rawData3 : rawData
+        setGraphData(formattedData);
       } catch (error) {
-        setData([]);
+        setGraphData([]);
         console.log(error);
       }
     };
 
     updateChartData();
-  }, [stockSymbol, filter]); // Stocksymbol and filter are provided as parameters whose change in value, triggers the change in graph
+  }, [filter]); // Stocksymbol and filter are provided as parameters whose change in value, triggers the change in graph
+  const data = prepareData(filter === "1M" ? rawData2 : filter === "1Y"? rawData3 : rawData);
+  data.reduce((acc, item) => console.log(item), 0);
+  const minValue = data.reduce(
+    (minValue, { low, openClose: [open, close] }) => {
+      const currentMin = Math.min(low, open, close);
+      return minValue === null || currentMin < minValue ? currentMin : minValue;
+    },
+    null,
+  );
+  const maxValue = data.reduce(
+    (maxValue, { high, openClose: [open, close] }) => {
+      const currentMax = Math.max(high, open, close);
+      return currentMax > maxValue ? currentMax : maxValue;
+    },
+    minValue,
+  );
+
+  console.log(data);
+  console.log(minValue, maxValue);
 
   return (
     <Card>
@@ -74,8 +153,13 @@ const Chart = () => {
         ))}
       </ul>
       <ResponsiveContainer>
-        <AreaChart data={data}>
-          <defs>
+    <BarChart
+      width={600}
+      height={300}
+      data={data}
+      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+    >
+      <defs>
             <linearGradient id="chartColor" x1="0" y1="0" x2="0" y2="1">
               <stop
                 offset="5%"
@@ -93,20 +177,23 @@ const Chart = () => {
             contentStyle={darkMode ? { backgroundColor: "#111827" } : null}
             itemStyle={darkMode ? { color: "#818cf8" } : null}
           />
-          <Area
-            type="monotone"
-            dataKey="value"
-            stroke="#312e81"
-            fill="url(#chartColor)"
-            fillOpacity={1}
-            strokeWidth={0.5}
-          />
-          <XAxis dataKey="date"/> {/* "Date" is supplied to X axis' data key */}
-          <YAxis domain={[0, dataMax => (Math.ceil(dataMax))]} type="number" tickCount={7} dataKey="value" /> {/* The domain of Y axis contains points from 0 to the ceil round-off (whole number) of the maximum data */}
-        </AreaChart>
-      </ResponsiveContainer>
+      <XAxis dataKey="ts" />
+      <YAxis domain={[minValue, maxValue]} />
+      <CartesianGrid strokeDasharray="3 3" />
+      <Bar
+        dataKey="openClose"
+        fill="#8884d8"
+        shape={<Candlestick />}
+        // label={{ position: 'top' }}
+      >
+        {data.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={colors[index % 20]} />
+        ))}
+      </Bar>
+    </BarChart>
+    </ResponsiveContainer>
     </Card>
   );
 };
 
-export default Chart;
+export default CustomShapeBarChart;
